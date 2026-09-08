@@ -2,7 +2,7 @@
   "id": "duels-cats",
   "title": "Duels & Chats",
   "description": "Module Foundry VTT (v13/v14) pour mettre en scène les duels d'intimidation entre chats : sélection des deux protagonistes par glisser-déposer, jets opposés (Coussinet vs Caresse), écran d'affrontement animé et gestion des points de réputation.",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "socket": true,
   "compatibility": {
     "minimum": "13",
@@ -34,7 +34,7 @@
   ],
   "url": "https://github.com/tomjdr4-hub/Duels-Cats",
   "manifest": "https://github.com/tomjdr4-hub/Duels-Cats/releases/latest/download/module.json",
-  "download": "https://github.com/tomjdr4-hub/Duels-Cats/releases/download/v0.1.3/module.zip",
+  "download": "https://github.com/tomjdr4-hub/Duels-Cats/releases/download/v0.1.4/module.zip",
   "readme": "https://github.com/tomjdr4-hub/Duels-Cats/blob/main/README.md",
   "bugs": "https://github.com/tomjdr4-hub/Duels-Cats/issues"
 }

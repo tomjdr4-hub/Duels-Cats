@@ -600,3 +600,27 @@
   from { filter: brightness(1); }
   to { filter: brightness(1.35); }
 }
+
+/* Shared "Cats" banner backdrop for the VS / WINNER / FIGHT overlays: a navy horizontal band with a
+   tiled gold paw-print motif, framed by thin gold rules. Pure CSS/SVG, no external asset needed. */
+
+.duels-cats-vs-overlay::before,
+.duels-cats-outcome-overlay::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: min(48vh, 440px);
+  z-index: -1;
+  pointer-events: none;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='%23d4af37' fill-opacity='0.4'%3E%3Ccircle cx='32' cy='40' r='9'/%3E%3Ccircle cx='17' cy='22' r='5'/%3E%3Ccircle cx='32' cy='14' r='5'/%3E%3Ccircle cx='47' cy='22' r='5'/%3E%3C/g%3E%3C/svg%3E")
+      repeat,
+    linear-gradient(180deg, #0a0e28 0%, #161d4a 45%, #161d4a 55%, #0a0e28 100%);
+  background-size: 64px 64px, auto;
+  border-top: 3px solid #d4af37;
+  border-bottom: 3px solid #d4af37;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.55) inset, 0 6px 30px rgba(0, 0, 0, 0.5);
+}

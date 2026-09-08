@@ -1,0 +1,398 @@
+.duels-cats-app {
+  padding: 0.25rem 0.5rem 0.5rem;
+}
+
+.duels-cats-app .dc-layout {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.duels-cats-app .dc-column {
+  flex: 0 0 180px;
+  min-height: 220px;
+  border: 1px dashed var(--color-border-light-tertiary, #999);
+  border-radius: 6px;
+  padding: 0.5rem;
+}
+
+.duels-cats-app .dc-column h3 {
+  margin: 0 0 0.35rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.duels-cats-app .dc-token-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.duels-cats-app .dc-token {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.4rem;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.05);
+  cursor: grab;
+  user-select: none;
+}
+
+.duels-cats-app .dc-token:active {
+  cursor: grabbing;
+}
+
+.duels-cats-app .dc-token img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: none;
+}
+
+.duels-cats-app .dc-empty {
+  font-size: 0.8rem;
+  font-style: italic;
+  opacity: 0.6;
+}
+
+.duels-cats-app .dc-duelists {
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+.duels-cats-app .dc-slot {
+  flex: 1;
+  min-height: 220px;
+  border: 1px dashed var(--color-border-light-tertiary, #999);
+  border-radius: 6px;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.duels-cats-app .dc-slot h3 {
+  margin: 0 0 0.35rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  opacity: 0.7;
+  text-align: center;
+}
+
+.duels-cats-app .dc-versus-label {
+  align-self: center;
+  font-weight: bold;
+  font-size: 1.4rem;
+  color: #d4af37;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.duels-cats-app .dc-drop-hint {
+  margin: auto;
+  text-align: center;
+  font-size: 0.8rem;
+  font-style: italic;
+  opacity: 0.6;
+}
+
+.duels-cats-app .dc-combatant {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: grab;
+}
+
+.duels-cats-app .dc-combatant:active {
+  cursor: grabbing;
+}
+
+.duels-cats-app .dc-combatant img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #d4af37;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.duels-cats-app .dc-stat-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: 100%;
+}
+
+.duels-cats-app .dc-stat-row label {
+  flex: 1;
+  font-size: 0.78rem;
+  opacity: 0.8;
+}
+
+.duels-cats-app .dc-stat-input {
+  width: 3.4em;
+  text-align: center;
+}
+
+.duels-cats-app .dc-rep-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+}
+
+.duels-cats-app .dc-hint {
+  font-size: 0.8rem;
+  opacity: 0.65;
+  margin: 0.5rem 0 0.25rem;
+}
+
+.duels-cats-app .dc-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.duels-cats-app .dc-result {
+  margin-top: 0.75rem;
+  padding: 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #d4af37;
+  background: rgba(212, 175, 55, 0.08);
+}
+
+.duels-cats-app .dc-roll-line {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+  font-size: 0.9rem;
+}
+
+.duels-cats-app .dc-roll-line img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #d4af37;
+}
+
+.duels-cats-app .dc-outcome-label {
+  font-weight: bold;
+  margin: 0.4rem 0;
+}
+
+.duels-cats-app .dc-choice-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.4rem 0;
+}
+
+.duels-cats-app .dc-rep-transfer {
+  font-style: italic;
+  margin: 0.4rem 0 0.2rem;
+}
+
+.duels-cats-app .dc-applied {
+  opacity: 0.7;
+  font-style: italic;
+}
+
+/* Chat card */
+
+.duels-cats-chat-card {
+  text-align: center;
+}
+
+.duels-cats-chat-card .dc-chat-fighters {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-bottom: 0.4rem;
+}
+
+.duels-cats-chat-card .dc-chat-fighter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.8rem;
+}
+
+.duels-cats-chat-card .dc-chat-fighter img {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #d4af37;
+}
+
+.duels-cats-chat-card .dc-chat-vs {
+  font-weight: bold;
+  color: #d4af37;
+}
+
+.duels-cats-chat-card .dc-chat-roll {
+  margin: 0.1rem 0;
+  font-size: 0.85rem;
+}
+
+.duels-cats-chat-card .dc-chat-outcome {
+  margin: 0.3rem 0 0;
+}
+
+.duels-cats-chat-card .dc-chat-rep {
+  margin: 0.2rem 0 0;
+  font-style: italic;
+  font-size: 0.85rem;
+}
+
+/* Floating widget */
+
+#duels-cats-widget {
+  position: fixed;
+  left: 80px;
+  bottom: 110px;
+  width: 44px;
+  height: 44px;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 50%;
+  background: #1c1c2e;
+  border: 2px solid #d4af37;
+  color: #d4af37;
+  font-size: 1.2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  transition: transform 0.15s ease;
+}
+
+#duels-cats-widget:hover {
+  transform: translateY(-4px) scale(1.08);
+}
+
+/* Settings app */
+
+.duels-cats-settings {
+  padding: 0.25rem 0.5rem 0.5rem;
+}
+
+.duels-cats-settings .dc-hint {
+  font-size: 0.8rem;
+  opacity: 0.7;
+  margin: 0 0 0.6rem;
+}
+
+.duels-cats-settings .form-group {
+  margin-bottom: 0.5rem;
+}
+
+.duels-cats-settings .form-group label {
+  display: block;
+  font-size: 0.8rem;
+  opacity: 0.8;
+  margin-bottom: 0.15rem;
+}
+
+.duels-cats-settings .dc-sound-row {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.duels-cats-settings .dc-sound-row input {
+  flex: 1;
+}
+
+.duels-cats-settings .dc-settings-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+/* VS overlay */
+
+.duels-cats-vs-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5rem;
+  background: rgba(5, 5, 12, 0.88);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  cursor: pointer;
+}
+
+.duels-cats-vs-overlay.dc-vs-active {
+  opacity: 1;
+}
+
+.duels-cats-vs-overlay.dc-vs-fading {
+  opacity: 0;
+}
+
+.duels-cats-vs-overlay .dc-vs-fighter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  transition: transform 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+.duels-cats-vs-overlay .dc-vs-fighter img {
+  width: min(28vw, 260px);
+  height: min(28vw, 260px);
+  object-fit: cover;
+  border-radius: 12px;
+  border: 4px solid #d4af37;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+}
+
+.duels-cats-vs-overlay .dc-vs-fighter span {
+  color: #f2e6c9;
+  font-size: 1.3rem;
+  font-weight: bold;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.duels-cats-vs-overlay .dc-vs-left {
+  transform: translateX(-60vw);
+}
+
+.duels-cats-vs-overlay.dc-vs-active .dc-vs-left {
+  transform: translateX(0);
+}
+
+.duels-cats-vs-overlay .dc-vs-right {
+  transform: translateX(60vw);
+}
+
+.duels-cats-vs-overlay.dc-vs-active .dc-vs-right {
+  transform: translateX(0);
+}
+
+.duels-cats-vs-overlay .dc-vs-versus {
+  font-size: min(8vw, 5rem);
+  font-weight: 900;
+  font-style: italic;
+  color: #d4af37;
+  text-shadow: 0 0 20px rgba(212, 175, 55, 0.7), 0 4px 6px rgba(0, 0, 0, 0.8);
+  transform: scale(0);
+  transition: transform 0.4s cubic-bezier(0.3, 1.6, 0.5, 1) 0.35s;
+}
+
+.duels-cats-vs-overlay.dc-vs-active .dc-vs-versus {
+  transform: scale(1);
+}

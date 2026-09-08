@@ -1,0 +1,28 @@
+<div class="duels-cats-settings">
+  <p class="dc-hint">{{localize "DUELSCATS.SettingsHint"}}</p>
+
+  <div class="form-group">
+    <label>{{localize "DUELSCATS.PathCoussinet"}}</label>
+    <input type="text" name="coussinet" value="{{paths.coussinet}}" />
+  </div>
+  <div class="form-group">
+    <label>{{localize "DUELSCATS.PathCaresse"}}</label>
+    <input type="text" name="caresse" value="{{paths.caresse}}" />
+  </div>
+  <div class="form-group">
+    <label>{{localize "DUELSCATS.PathReputation"}}</label>
+    <input type="text" name="reputation" value="{{paths.reputation}}" />
+  </div>
+  <div class="form-group">
+    <label>{{localize "DUELSCATS.HissSound"}}</label>
+    <div class="dc-sound-row">
+      <input type="text" name="hissSound" value="{{hissSound}}" readonly />
+      <button type="button" data-action="browseSound"><i class="fa-solid fa-folder-open"></i></button>
+      <button type="button" data-action="clearSound"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+  </div>
+
+  <footer class="dc-settings-actions">
+    <button type="button" data-action="save"><i class="fa-solid fa-check"></i> {{localize "DUELSCATS.Save"}}</button>
+  </footer>
+</div>

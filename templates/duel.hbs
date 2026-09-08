@@ -1,0 +1,114 @@
+<div class="duels-cats-app">
+  <div class="dc-layout">
+    <div class="dc-column dc-available" data-zone="available">
+      <h3>{{localize "DUELSCATS.AvailableTokens"}}</h3>
+      <ul class="dc-token-list">
+        {{#each available}}
+        <li class="dc-token" draggable="true" data-token-id="{{this.id}}">
+          <img src="{{this.img}}" alt="" />
+          <span>{{this.name}}</span>
+        </li>
+        {{/each}}
+        {{#unless hasAvailable}}
+        <li class="dc-empty">{{localize "DUELSCATS.NoMoreTokens"}}</li>
+        {{/unless}}
+      </ul>
+    </div>
+
+    <div class="dc-duelists">
+      <div class="dc-slot" data-zone="provocant">
+        <h3>{{localize "DUELSCATS.Provocant"}}</h3>
+        {{#if provocant}}
+        <div class="dc-combatant" draggable="true" data-token-id="{{provocant.id}}">
+          <img src="{{provocant.img}}" alt="{{provocant.name}}" />
+          <strong>{{provocant.name}}</strong>
+          <div class="dc-stat-row">
+            <label>{{localize "DUELSCATS.Coussinet"}}</label>
+            <input type="number" class="dc-stat-input" data-role="provocant" data-stat="coussinet" value="{{provocant.stats.coussinet}}" />
+          </div>
+          <div class="dc-stat-row">
+            <label>{{localize "DUELSCATS.Reputation"}}</label>
+            <input type="number" class="dc-stat-input" data-role="provocant" data-stat="reputation" value="{{provocant.stats.reputation}}" />
+          </div>
+          <label class="dc-rep-toggle">
+            <input type="checkbox" class="dc-rep-toggle-input" data-role="provocant" {{#if provocant.useRepBonus}}checked{{/if}} />
+            {{localize "DUELSCATS.UseRepBonus"}} (+{{provocant.repBonus}})
+          </label>
+          <button type="button" data-action="clearSlot" data-role="provocant"><i class="fa-solid fa-xmark"></i> {{localize "DUELSCATS.Remove"}}</button>
+        </div>
+        {{else}}
+        <p class="dc-drop-hint">{{localize "DUELSCATS.DropHint"}}</p>
+        {{/if}}
+      </div>
+
+      <div class="dc-versus-label">{{localize "DUELSCATS.VersusLabel"}}</div>
+
+      <div class="dc-slot" data-zone="provoque">
+        <h3>{{localize "DUELSCATS.Provoque"}}</h3>
+        {{#if provoque}}
+        <div class="dc-combatant" draggable="true" data-token-id="{{provoque.id}}">
+          <img src="{{provoque.img}}" alt="{{provoque.name}}" />
+          <strong>{{provoque.name}}</strong>
+          <div class="dc-stat-row">
+            <label>{{localize "DUELSCATS.Caresse"}}</label>
+            <input type="number" class="dc-stat-input" data-role="provoque" data-stat="caresse" value="{{provoque.stats.caresse}}" />
+          </div>
+          <div class="dc-stat-row">
+            <label>{{localize "DUELSCATS.Reputation"}}</label>
+            <input type="number" class="dc-stat-input" data-role="provoque" data-stat="reputation" value="{{provoque.stats.reputation}}" />
+          </div>
+          <label class="dc-rep-toggle">
+            <input type="checkbox" class="dc-rep-toggle-input" data-role="provoque" {{#if provoque.useRepBonus}}checked{{/if}} />
+            {{localize "DUELSCATS.UseRepBonus"}} (+{{provoque.repBonus}})
+          </label>
+          <button type="button" data-action="clearSlot" data-role="provoque"><i class="fa-solid fa-xmark"></i> {{localize "DUELSCATS.Remove"}}</button>
+        </div>
+        {{else}}
+        <p class="dc-drop-hint">{{localize "DUELSCATS.DropHint"}}</p>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+
+  <p class="dc-hint">{{localize "DUELSCATS.DragHint"}}</p>
+
+  <footer class="dc-actions">
+    <button type="button" data-action="settings"><i class="fa-solid fa-gear"></i> {{localize "DUELSCATS.Settings"}}</button>
+    <button type="button" data-action="roll" {{#unless canRoll}}disabled{{/unless}}><i class="fa-solid fa-paw"></i> {{localize "DUELSCATS.RollDuel"}}</button>
+  </footer>
+
+  {{#if result}}
+  <div class="dc-result dc-outcome-{{result.outcome}}">
+    <div class="dc-roll-line">
+      <img src="{{result.provocant.img}}" alt="" />
+      <span>{{result.provocant.name}} : 1d10 ({{result.provocant.roll}}) + {{result.provocant.stat}}{{#if result.provocant.repBonus}} + {{result.provocant.repBonus}}{{/if}} = <strong>{{result.provocant.total}}</strong> {{localize "DUELSCATS.VsThreshold"}} {{result.provocant.threshold}} {{#if result.provocant.success}}✅{{else}}❌{{/if}}</span>
+    </div>
+    <div class="dc-roll-line">
+      <img src="{{result.provoque.img}}" alt="" />
+      <span>{{result.provoque.name}} : 1d10 ({{result.provoque.roll}}) + {{result.provoque.stat}}{{#if result.provoque.repBonus}} + {{result.provoque.repBonus}}{{/if}} = <strong>{{result.provoque.total}}</strong> {{localize "DUELSCATS.VsThreshold"}} {{result.provoque.threshold}} {{#if result.provoque.success}}✅{{else}}❌{{/if}}</span>
+    </div>
+
+    <p class="dc-outcome-label">{{result.outcomeLabel}}</p>
+
+    {{#if result.needsChoice}}
+    <div class="dc-choice-actions">
+      <button type="button" data-action="resolveChoice" data-choice="accept">{{localize "DUELSCATS.ProvoqueAccepts"}}</button>
+      <button type="button" data-action="resolveChoice" data-choice="combat">{{localize "DUELSCATS.EngageCombat"}}</button>
+    </div>
+    {{/if}}
+
+    {{#if result.canStartCombat}}
+    <button type="button" data-action="startCombat"><i class="fa-solid fa-khanda"></i> {{localize "DUELSCATS.StartCombat"}}</button>
+    {{/if}}
+
+    {{#if result.reputationTransfer}}
+    <p class="dc-rep-transfer">{{result.reputationTransferLabel}}</p>
+    {{#unless result.applied}}
+    <button type="button" data-action="applyReputation"><i class="fa-solid fa-check"></i> {{localize "DUELSCATS.ApplyReputation"}}</button>
+    {{else}}
+    <p class="dc-applied">{{localize "DUELSCATS.ReputationApplied"}}</p>
+    {{/unless}}
+    {{/if}}
+  </div>
+  {{/if}}
+</div>

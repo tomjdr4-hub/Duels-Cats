@@ -3,11 +3,13 @@ import { MODULE_ID } from "./constants.js";
 const STAT_PATHS_SETTING = "statPaths";
 const HISS_SOUND_SETTING = "hissSound";
 
-// Best-guess defaults, modeled on the "system.identity.reputation" path already used by Cartes & Chats.
-// Adjustable from the in-app settings window since every table's actor sheet may differ.
+// Defaults match the "cats-la-mascarade" system (Vlyan) template.json: Coussinet and Caresse live
+// under system.attributes as "pad"/"caress", Réputation under system.identity - confirmed from the
+// system's actual template.json, not guessed. Still adjustable from the settings window for other
+// systems or a customized sheet.
 const DEFAULT_STAT_PATHS = {
-  coussinet: "system.identity.coussinet",
-  caresse: "system.identity.caresse",
+  coussinet: "system.attributes.pad",
+  caresse: "system.attributes.caress",
   reputation: "system.identity.reputation"
 };
 
@@ -47,7 +49,7 @@ export async function setHissSound(path) {
   await game.settings.set(MODULE_ID, HISS_SOUND_SETTING, path ?? "");
 }
 
-// Reads a dot-path attribute off an actor (e.g. "system.identity.coussinet"). Returns null when the
+// Reads a dot-path attribute off an actor (e.g. "system.attributes.pad"). Returns null when the
 // path doesn't resolve to a usable number, so callers can fall back to manual entry (0, editable).
 export function readActorStat(actor, path) {
   if (!actor || !path) return null;

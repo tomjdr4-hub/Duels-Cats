@@ -1,6 +1,23 @@
 <div class="duels-cats-settings">
   <p class="dc-hint">{{localize "DUELSCATS.SettingsHint"}}</p>
 
+  {{#if hasActors}}
+  <div class="form-group dc-inspect">
+    <label>{{localize "DUELSCATS.InspectLabel"}}</label>
+    <p class="dc-hint">{{localize "DUELSCATS.InspectHint"}}</p>
+    <div class="dc-sound-row">
+      <select name="inspectActorId">
+        {{#each actors}}
+        <option value="{{this.id}}">{{this.name}}</option>
+        {{/each}}
+      </select>
+      <button type="button" data-action="inspectActor"><i class="fa-solid fa-magnifying-glass"></i> {{localize "DUELSCATS.InspectButton"}}</button>
+    </div>
+    <pre class="dc-inspect-output" hidden></pre>
+  </div>
+  <hr />
+  {{/if}}
+
   <div class="form-group">
     <label>{{localize "DUELSCATS.PathCoussinet"}}</label>
     <input type="text" name="coussinet" value="{{paths.coussinet}}" />

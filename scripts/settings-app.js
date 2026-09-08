@@ -16,16 +16,31 @@ export class DuelsCatsSettingsApp extends HandlebarsApplicationMixin(Application
     actions: {
       browseSound: DuelsCatsSettingsApp.#onBrowseSound,
       clearSound: DuelsCatsSettingsApp.#onClearSound,
+      inspectActor: DuelsCatsSettingsApp.#onInspectActor,
       save: DuelsCatsSettingsApp.#onSave
     }
   };
 
   static PARTS = {
-    body: { template: `modules/${MODULE_ID}/templates/settings.hbs` }
+    body: { template: `modules/${MODULE_ID}/templates/settings.hbs`, scrollable: [".dc-inspect-output"] }
   };
 
   async _prepareContext(_options) {
-    return { paths: getStatPaths(), hissSound: getHissSound() };
+    const actors = game.actors.contents
+      .map(a => ({ id: a.id, name: a.name }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+    return { paths: getStatPaths(), hissSound: getHissSound(), actors, hasActors: actors.length > 0 };
+  }
+
+  // Dumps the selected actor's system data as JSON so the GM can find the exact key path to type
+  // above (e.g. seeing {"identity":{"coussinet":3}} means the path is system.identity.coussinet).
+  static #onInspectActor(_event, _target) {
+    const select = this.element.querySelector('select[name="inspectActorId"]');
+    const output = this.element.querySelector(".dc-inspect-output");
+    const actor = game.actors.get(select?.value);
+    if (!actor || !output) return;
+    output.textContent = JSON.stringify(actor.system, null, 2);
+    output.hidden = false;
   }
 
   static #onBrowseSound(_event, _target) {

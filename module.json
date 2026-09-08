@@ -3,7 +3,7 @@
   "title": "Duels & Chats",
   "description": "Module Foundry VTT (v13/v14) pour mettre en scène les duels d'intimidation entre chats : sélection des deux protagonistes par glisser-déposer, jets opposés (Coussinet vs Caresse), écran d'affrontement animé et gestion des points de réputation.",
   "version": "0.1.1",
-  "socket": false,
+  "socket": true,
   "compatibility": {
     "minimum": "13",
     "verified": "14",

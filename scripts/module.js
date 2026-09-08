@@ -1,6 +1,9 @@
 import { MODULE_ID } from "./constants.js";
 import { DuelsCatsApp } from "./duel-app.js";
 import { registerDuelSettings } from "./settings.js";
+import { registerDuelSocket } from "./duel-socket.js";
+import { showVsOverlay } from "./vs-overlay.js";
+import { showRollPrompt } from "./roll-prompt.js";
 
 let duelApp = null;
 
@@ -59,6 +62,12 @@ Hooks.once("init", () => {
 Hooks.once("ready", () => {
   game.modules.get(MODULE_ID).api = { openDuel };
   createWidget();
+
+  registerDuelSocket({
+    onVsOverlay: data => showVsOverlay(data, { playSound: false }),
+    onRollRequest: data => showRollPrompt(data),
+    onRollResult: data => duelApp?.handleRemoteRollResult(data)
+  });
 });
 
 Hooks.on("renderPlayerList", () => positionWidget());

@@ -2,6 +2,7 @@ import { MODULE_ID } from "./constants.js";
 import { getStatPaths, readActorStat } from "./settings.js";
 import { DuelsCatsSettingsApp } from "./settings-app.js";
 import { showVsOverlay } from "./vs-overlay.js";
+import { emitVsOverlay, emitRollRequest, findOwningPlayer } from "./duel-socket.js";
 import { computeThreshold, computeReputationBonus, computeTotal, determineOutcome, computeReputationGain } from "./resolve.js";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
@@ -26,6 +27,8 @@ function freshStats(actor) {
   };
 }
 
+const ROLE_STAT_KEY = { provocant: "coussinet", provoque: "caresse" };
+
 export class DuelsCatsApp extends HandlebarsApplicationMixin(ApplicationV2) {
   static DEFAULT_OPTIONS = {
     id: "duels-cats-app",
@@ -38,6 +41,7 @@ export class DuelsCatsApp extends HandlebarsApplicationMixin(ApplicationV2) {
     actions: {
       clearSlot: DuelsCatsApp.#onClearSlot,
       roll: DuelsCatsApp.#onRoll,
+      forceRoll: DuelsCatsApp.#onForceRoll,
       resolveChoice: DuelsCatsApp.#onResolveChoice,
       startCombat: DuelsCatsApp.#onStartCombat,
       applyReputation: DuelsCatsApp.#onApplyReputation,
@@ -56,6 +60,8 @@ export class DuelsCatsApp extends HandlebarsApplicationMixin(ApplicationV2) {
     this.useRepBonus = { provocant: true, provoque: true };
     this.lastResult = null;
     this.lastRollData = null;
+    this.pendingDuelId = null;
+    this.pendingRolls = null;
   }
 
   async _prepareContext(_options) {
@@ -82,9 +88,25 @@ export class DuelsCatsApp extends HandlebarsApplicationMixin(ApplicationV2) {
       hasAvailable: available.length > 0,
       provocant: buildEntry("provocant"),
       provoque: buildEntry("provoque"),
-      canRoll: !!this.slots.provocant && !!this.slots.provoque,
+      canRoll: !!this.slots.provocant && !!this.slots.provoque && !this.pendingRolls,
+      pending: this.pendingRolls
+        ? { provocant: this.#pendingEntry("provocant"), provoque: this.#pendingEntry("provoque") }
+        : null,
       result: this.lastResult
     };
+  }
+
+  #pendingEntry(role) {
+    const p = this.pendingRolls[role];
+    if (!p) return null;
+    if (p.status === "waiting") {
+      return {
+        waiting: true,
+        canForce: !p.isAuto,
+        label: game.i18n.format("DUELSCATS.WaitingFor", { name: p.waitingForName })
+      };
+    }
+    return { waiting: false, total: p.total };
   }
 
   _onRender(context, options) {
@@ -128,6 +150,8 @@ export class DuelsCatsApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   #assignToZone(zone, tokenId) {
+    if (this.pendingRolls) return; // don't reshuffle combatants mid-roll
+
     for (const role of ["provocant", "provoque"]) {
       if (this.slots[role]?.id === tokenId) {
         this.slots[role] = null;
@@ -152,6 +176,7 @@ export class DuelsCatsApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   static #onClearSlot(_event, target) {
+    if (this.pendingRolls) return;
     const role = target.dataset.role;
     this.slots[role] = null;
     this.overrides[role] = null;
@@ -164,53 +189,114 @@ export class DuelsCatsApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   static async #onRoll(_event, _target) {
-    if (!this.slots.provocant || !this.slots.provoque) return;
+    if (!this.slots.provocant || !this.slots.provoque || this.pendingRolls) return;
 
-    await showVsOverlay({
+    this.pendingDuelId = foundry.utils.randomID();
+    this.pendingRolls = {
+      provocant: { status: "waiting", waitingForName: "" },
+      provoque: { status: "waiting", waitingForName: "" }
+    };
+    this.lastResult = null;
+    this.render();
+
+    const vsPayload = {
       leftImg: this.slots.provocant.img,
       leftName: this.slots.provocant.name,
       rightImg: this.slots.provoque.img,
       rightName: this.slots.provoque.name
-    });
+    };
+    emitVsOverlay(vsPayload);
+    await showVsOverlay(vsPayload);
+
+    this.#requestOrAutoRoll("provocant");
+    this.#requestOrAutoRoll("provoque");
+    this.render();
+  }
+
+  #requestOrAutoRoll(role) {
+    const token = this.slots[role];
+    const stats = this.overrides[role];
+    const statKey = ROLE_STAT_KEY[role];
+    const statLabel = game.i18n.localize(role === "provocant" ? "DUELSCATS.Coussinet" : "DUELSCATS.Caresse");
+    const repBonus = this.useRepBonus[role] ? computeReputationBonus(stats.reputation) : 0;
+    const opponentRole = role === "provocant" ? "provoque" : "provocant";
+
+    const owner = findOwningPlayer(token.actor);
+    if (owner) {
+      this.pendingRolls[role] = { status: "waiting", waitingForName: owner.character?.name ?? owner.name, isAuto: false };
+      emitRollRequest({
+        duelId: this.pendingDuelId,
+        toUserId: owner.id,
+        role,
+        statLabel,
+        statValue: stats[statKey],
+        repBonus,
+        tokenImg: token.img,
+        tokenName: token.name,
+        opponentName: this.slots[opponentRole].name
+      });
+    } else {
+      this.pendingRolls[role] = { status: "waiting", waitingForName: game.user.name, isAuto: true };
+      this.#performLocalRoll(role, stats[statKey], repBonus);
+    }
+  }
+
+  async #performLocalRoll(role, statValue, repBonus) {
+    const roll = await new Roll("1d10").evaluate();
+    if (game.dice3d) await game.dice3d.showForRoll(roll, game.user, true);
+    const total = computeTotal(roll.total, statValue, repBonus);
+    this.#recordRoll(role, total, roll.total);
+  }
+
+  // Called from module.js's socket listener when a player sends back their roll result.
+  handleRemoteRollResult(data) {
+    if (!this.pendingDuelId || data.duelId !== this.pendingDuelId) return;
+    this.#recordRoll(data.role, data.rollTotal, data.rollDie ?? data.rollTotal);
+  }
+
+  static #onForceRoll(_event, target) {
+    const role = target.dataset.role;
+    if (!this.pendingRolls || this.pendingRolls[role]?.status !== "waiting") return;
+    const stats = this.overrides[role];
+    const repBonus = this.useRepBonus[role] ? computeReputationBonus(stats.reputation) : 0;
+    this.#performLocalRoll(role, stats[ROLE_STAT_KEY[role]], repBonus);
+  }
+
+  #recordRoll(role, total, die) {
+    if (!this.pendingRolls || this.pendingRolls[role]?.status === "done") return;
+    this.pendingRolls[role] = { status: "done", total, die };
+    this.render();
+    this.#maybeResolve();
+  }
+
+  #maybeResolve() {
+    if (this.pendingRolls.provocant.status !== "done" || this.pendingRolls.provoque.status !== "done") return;
 
     const provocantStats = this.overrides.provocant;
     const provoqueStats = this.overrides.provoque;
-
     const seuilProvocant = computeThreshold(provoqueStats.caresse);
     const seuilProvoque = computeThreshold(provocantStats.coussinet);
-
-    const repBonusProvocant = this.useRepBonus.provocant ? computeReputationBonus(provocantStats.reputation) : 0;
-    const repBonusProvoque = this.useRepBonus.provoque ? computeReputationBonus(provoqueStats.reputation) : 0;
-
-    const rollProvocant = await new Roll("1d10").evaluate();
-    const rollProvoque = await new Roll("1d10").evaluate();
-
-    if (game.dice3d) {
-      await Promise.all([
-        game.dice3d.showForRoll(rollProvocant, game.user, true),
-        game.dice3d.showForRoll(rollProvoque, game.user, true)
-      ]);
-    }
-
-    const totalProvocant = computeTotal(rollProvocant.total, provocantStats.coussinet, repBonusProvocant);
-    const totalProvoque = computeTotal(rollProvoque.total, provoqueStats.caresse, repBonusProvoque);
+    const totalProvocant = this.pendingRolls.provocant.total;
+    const totalProvoque = this.pendingRolls.provoque.total;
     const successProvocant = totalProvocant >= seuilProvocant;
     const successProvoque = totalProvoque >= seuilProvoque;
 
     this.lastRollData = {
-      rollProvocant: rollProvocant.total,
-      rollProvoque: rollProvoque.total,
+      rollProvocant: this.pendingRolls.provocant.die,
+      rollProvoque: this.pendingRolls.provoque.die,
       totalProvocant,
       totalProvoque,
       seuilProvocant,
       seuilProvoque,
       successProvocant,
       successProvoque,
-      repBonusProvocant,
-      repBonusProvoque
+      repBonusProvocant: this.useRepBonus.provocant ? computeReputationBonus(provocantStats.reputation) : 0,
+      repBonusProvoque: this.useRepBonus.provoque ? computeReputationBonus(provoqueStats.reputation) : 0
     };
 
     this.lastResult = this.#buildResult(determineOutcome(successProvocant, successProvoque));
+    this.pendingDuelId = null;
+    this.pendingRolls = null;
     this.#postResultChatMessage();
     this.render();
   }

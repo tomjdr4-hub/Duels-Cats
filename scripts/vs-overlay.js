@@ -2,7 +2,11 @@ import { getHissSound } from "./settings.js";
 
 // Full-screen "VS" faceoff shown before the dice are rolled. Purely cosmetic/local-DOM: it does not
 // touch game state. Resolves once the intro has played (auto-dismiss, or an early click to skip).
-export function showVsOverlay({ leftImg, leftName, rightImg, rightName }) {
+//
+// playSound defaults to true for the GM who starts the duel (AudioHelper's push:true already
+// broadcasts that sound to everyone) - callers displaying the overlay in response to the socket
+// broadcast must pass { playSound: false } so the sound doesn't fire again on every client.
+export function showVsOverlay({ leftImg, leftName, rightImg, rightName }, { playSound = true } = {}) {
   return new Promise(resolve => {
     const overlay = document.createElement("div");
     overlay.className = "duels-cats-vs-overlay";
@@ -19,9 +23,11 @@ export function showVsOverlay({ leftImg, leftName, rightImg, rightName }) {
     `;
     document.body.append(overlay);
 
-    const hissSound = getHissSound();
-    if (hissSound) {
-      foundry.audio.AudioHelper.play({ src: hissSound, volume: 0.8, autoplay: true, loop: false }, true);
+    if (playSound) {
+      const hissSound = getHissSound();
+      if (hissSound) {
+        foundry.audio.AudioHelper.play({ src: hissSound, volume: 0.8, autoplay: true, loop: false }, true);
+      }
     }
 
     requestAnimationFrame(() => overlay.classList.add("dc-vs-active"));

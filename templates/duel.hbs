@@ -74,8 +74,37 @@
 
   <footer class="dc-actions">
     <button type="button" data-action="settings"><i class="fa-solid fa-gear"></i> {{localize "DUELSCATS.Settings"}}</button>
+    {{#unless pending}}
     <button type="button" data-action="roll" {{#unless canRoll}}disabled{{/unless}}><i class="fa-solid fa-paw"></i> {{localize "DUELSCATS.RollDuel"}}</button>
+    {{/unless}}
   </footer>
+
+  {{#if pending}}
+  <div class="dc-pending">
+    <div class="dc-pending-row">
+      <strong>{{provocant.name}}</strong>
+      {{#if pending.provocant.waiting}}
+      <span class="dc-waiting"><i class="fa-solid fa-hourglass-half"></i> {{pending.provocant.label}}</span>
+      {{#if pending.provocant.canForce}}
+      <button type="button" data-action="forceRoll" data-role="provocant">{{localize "DUELSCATS.ForceRoll"}}</button>
+      {{/if}}
+      {{else}}
+      <span class="dc-done">✅ {{pending.provocant.total}}</span>
+      {{/if}}
+    </div>
+    <div class="dc-pending-row">
+      <strong>{{provoque.name}}</strong>
+      {{#if pending.provoque.waiting}}
+      <span class="dc-waiting"><i class="fa-solid fa-hourglass-half"></i> {{pending.provoque.label}}</span>
+      {{#if pending.provoque.canForce}}
+      <button type="button" data-action="forceRoll" data-role="provoque">{{localize "DUELSCATS.ForceRoll"}}</button>
+      {{/if}}
+      {{else}}
+      <span class="dc-done">✅ {{pending.provoque.total}}</span>
+      {{/if}}
+    </div>
+  </div>
+  {{/if}}
 
   {{#if result}}
   <div class="dc-result dc-outcome-{{result.outcome}}">

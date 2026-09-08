@@ -2,7 +2,8 @@ import { MODULE_ID } from "./constants.js";
 import { getStatPaths, readActorStat } from "./settings.js";
 import { DuelsCatsSettingsApp } from "./settings-app.js";
 import { showVsOverlay } from "./vs-overlay.js";
-import { emitVsOverlay, emitRollRequest, findOwningPlayer } from "./duel-socket.js";
+import { showOutcomeOverlay } from "./outcome-overlay.js";
+import { emitVsOverlay, emitOutcomeOverlay, emitRollRequest, findOwningPlayer } from "./duel-socket.js";
 import { computeThreshold, computeReputationBonus, computeTotal, determineOutcome, computeReputationGain } from "./resolve.js";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
@@ -269,7 +270,7 @@ export class DuelsCatsApp extends HandlebarsApplicationMixin(ApplicationV2) {
     this.#maybeResolve();
   }
 
-  #maybeResolve() {
+  async #maybeResolve() {
     if (this.pendingRolls.provocant.status !== "done" || this.pendingRolls.provoque.status !== "done") return;
 
     const provocantStats = this.overrides.provocant;
@@ -294,17 +295,44 @@ export class DuelsCatsApp extends HandlebarsApplicationMixin(ApplicationV2) {
       repBonusProvoque: this.useRepBonus.provoque ? computeReputationBonus(provoqueStats.reputation) : 0
     };
 
-    this.lastResult = this.#buildResult(determineOutcome(successProvocant, successProvoque));
+    const outcome = determineOutcome(successProvocant, successProvoque);
+    this.lastResult = this.#buildResult(outcome);
     this.pendingDuelId = null;
     this.pendingRolls = null;
+
+    // A double-fail needs the provoqué's choice first - no winner/fight reveal until #onResolveChoice.
+    await this.#playOutcomeAnimation(outcome);
+
     this.#postResultChatMessage();
     this.render();
   }
 
-  static #onResolveChoice(_event, target) {
+  // Broadcasts + shows the post-duel "WINNER"/"FIGHT" screen matching the resolved outcome.
+  async #playOutcomeAnimation(outcome) {
+    const provocant = this.slots.provocant;
+    const provoque = this.slots.provoque;
+
+    let payload;
+    if (outcome === "provocant") {
+      payload = { mode: "winner", side: "left", img: provocant.img, name: provocant.name };
+    } else if (outcome === "provoque") {
+      payload = { mode: "winner", side: "right", img: provoque.img, name: provoque.name };
+    } else if (outcome === "combat") {
+      payload = { mode: "fight", leftImg: provocant.img, leftName: provocant.name, rightImg: provoque.img, rightName: provoque.name };
+    } else {
+      return; // "impressionne" - wait for the provoqué's choice
+    }
+
+    emitOutcomeOverlay(payload);
+    await showOutcomeOverlay(payload);
+  }
+
+  static async #onResolveChoice(_event, target) {
     if (!this.lastRollData) return;
     const choice = target.dataset.choice; // "accept" | "combat"
-    this.lastResult = this.#buildResult(choice === "accept" ? "provocant" : "combat");
+    const outcome = choice === "accept" ? "provocant" : "combat";
+    this.lastResult = this.#buildResult(outcome);
+    await this.#playOutcomeAnimation(outcome);
     this.#postResultChatMessage();
     this.render();
   }

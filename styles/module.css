@@ -464,3 +464,139 @@
 .duels-cats-vs-overlay.dc-vs-active .dc-vs-versus {
   transform: scale(1);
 }
+
+/* Outcome overlay (WINNER / FIGHT) */
+
+.duels-cats-outcome-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5rem;
+  background: rgba(5, 5, 12, 0.9);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.duels-cats-outcome-overlay.dc-outcome-active {
+  opacity: 1;
+}
+
+.duels-cats-outcome-overlay.dc-outcome-fading {
+  opacity: 0;
+}
+
+.duels-cats-outcome-overlay .dc-outcome-fighter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  position: relative;
+  z-index: 1;
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.duels-cats-outcome-overlay .dc-outcome-fighter img {
+  object-fit: cover;
+  border-radius: 14px;
+  border: 5px solid #d4af37;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+}
+
+.duels-cats-outcome-overlay .dc-outcome-fighter span {
+  color: #f2e6c9;
+  font-size: 1.4rem;
+  font-weight: bold;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Solo (winner) mode - one big portrait entering from its side */
+
+.duels-cats-outcome-overlay .dc-outcome-solo img {
+  width: min(38vw, 340px);
+  height: min(38vw, 340px);
+}
+
+.duels-cats-outcome-overlay .dc-outcome-solo.dc-outcome-left {
+  transform: translateX(-70vw) rotate(-6deg);
+}
+
+.duels-cats-outcome-overlay.dc-outcome-active .dc-outcome-solo.dc-outcome-left {
+  transform: translateX(0) rotate(0deg);
+}
+
+.duels-cats-outcome-overlay .dc-outcome-solo.dc-outcome-right {
+  transform: translateX(70vw) rotate(6deg);
+}
+
+.duels-cats-outcome-overlay.dc-outcome-active .dc-outcome-solo.dc-outcome-right {
+  transform: translateX(0) rotate(0deg);
+}
+
+/* Fight mode - both portraits, smaller, facing off like the pre-duel VS screen */
+
+.duels-cats-outcome-overlay.dc-outcome-fight-mode .dc-outcome-fighter img {
+  width: min(26vw, 240px);
+  height: min(26vw, 240px);
+}
+
+.duels-cats-outcome-overlay .dc-outcome-left {
+  transform: translateX(-60vw);
+}
+
+.duels-cats-outcome-overlay.dc-outcome-active .dc-outcome-left {
+  transform: translateX(0);
+}
+
+.duels-cats-outcome-overlay .dc-outcome-right {
+  transform: translateX(60vw);
+}
+
+.duels-cats-outcome-overlay.dc-outcome-active .dc-outcome-right {
+  transform: translateX(0);
+}
+
+/* WINNER / FIGHT wordmark */
+
+.duels-cats-outcome-overlay .dc-outcome-word {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  font-weight: 900;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  text-align: center;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0) rotate(-8deg);
+  transition: transform 0.5s cubic-bezier(0.3, 1.8, 0.4, 1) 0.45s;
+}
+
+.duels-cats-outcome-overlay.dc-outcome-active .dc-outcome-word {
+  transform: translate(-50%, -50%) scale(1) rotate(-4deg);
+}
+
+.duels-cats-outcome-overlay .dc-outcome-winner {
+  font-size: min(14vw, 7rem);
+  color: #d4af37;
+  text-shadow: 0 0 30px rgba(212, 175, 55, 0.8), 0 6px 10px rgba(0, 0, 0, 0.9);
+  animation: dc-outcome-pulse 1.2s ease-in-out 1s infinite alternate;
+}
+
+.duels-cats-outcome-overlay .dc-outcome-fight {
+  font-size: min(16vw, 8rem);
+  color: #e8482c;
+  text-shadow: 0 0 30px rgba(232, 72, 44, 0.85), 0 6px 10px rgba(0, 0, 0, 0.9);
+  animation: dc-outcome-pulse 1s ease-in-out 1s infinite alternate;
+}
+
+@keyframes dc-outcome-pulse {
+  from { filter: brightness(1); }
+  to { filter: brightness(1.35); }
+}

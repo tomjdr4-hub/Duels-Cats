@@ -6,6 +6,10 @@ export function emitVsOverlay(payload) {
   game.socket.emit(SOCKET_NAME, { action: "vsOverlay", ...payload });
 }
 
+export function emitOutcomeOverlay(payload) {
+  game.socket.emit(SOCKET_NAME, { action: "outcomeOverlay", ...payload });
+}
+
 export function emitRollRequest(payload) {
   game.socket.emit(SOCKET_NAME, { action: "rollRequest", ...payload });
 }
@@ -17,10 +21,12 @@ export function emitRollResult(payload) {
 // Registered on every connected client (module.js, at ready) so the VS screen and the roll prompt
 // show up regardless of which window someone has open, the same way Cartes & Chats pops up incoming
 // trade offers.
-export function registerDuelSocket({ onVsOverlay, onRollRequest, onRollResult }) {
+export function registerDuelSocket({ onVsOverlay, onOutcomeOverlay, onRollRequest, onRollResult }) {
   game.socket.on(SOCKET_NAME, data => {
     if (data.action === "vsOverlay") {
       onVsOverlay?.(data);
+    } else if (data.action === "outcomeOverlay") {
+      onOutcomeOverlay?.(data);
     } else if (data.action === "rollRequest" && data.toUserId === game.user.id) {
       onRollRequest?.(data);
     } else if (data.action === "rollResult") {

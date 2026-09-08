@@ -10,11 +10,11 @@ Module Foundry VTT (v13/v14) pour mettre en scène les duels d'intimidation entr
 - Case à cocher par combattant pour activer/désactiver le bonus de réputation (+1 par tranche de 5 points).
 - Écran d'affrontement animé ("VS") **diffusé à tous les joueurs connectés** avant la résolution : les deux jetons glissent depuis les bords, avec un son de feulement optionnel (fichier à fournir vous-même via les réglages).
 - Chaque combattant lance **son propre dé** : si un joueur (non-MJ) possède la fiche liée au jeton et qu'il est connecté, il reçoit une popup "À vous de lancer les dés !" avec un bouton pour lancer son 1d10 lui-même. Sinon (PNJ, joueur absent), le MJ lance à sa place — avec, dans tous les cas, un bouton "Lancer à sa place (MJ)" pour débloquer un jet si un joueur reste inactif.
-- Résolution automatique des 4 cas de figure du duel :
-  1. Le provocant réussit, pas le provoqué → victoire du provocant.
-  2. Le provoqué réussit, pas le provocant → victoire du provoqué.
-  3. Les deux réussissent → le duel s'engage comme un combat normal (bouton pour ajouter les deux jetons au tracker de combat).
-  4. Les deux ratent → le provoqué choisit d'accepter la défaite ou d'engager le combat.
+- Résolution automatique des 4 cas de figure du duel, chacun avec son propre écran de fin **diffusé à tous les joueurs connectés** :
+  1. Le provocant réussit, pas le provoqué → victoire du provocant (son jeton arrive par la gauche, "WINNER" en grand).
+  2. Le provoqué réussit, pas le provocant → victoire du provoqué (jeton par la droite, "WINNER").
+  3. Les deux réussissent → le duel s'engage comme un combat normal (les deux jetons arrivent de chaque côté, "FIGHT" en grand ; bouton pour ajouter les deux jetons au tracker de combat).
+  4. Les deux ratent → le provoqué choisit d'accepter la défaite (écran "WINNER" du provocant) ou d'engager le combat (écran "FIGHT").
 - Transfert automatique de réputation si le perdant en avait plus que le gagnant (bouton "Appliquer" qui écrit directement sur la fiche).
 - Jets 1d10 intégrés à Foundry (compatibles avec Dice So Nice si installé) et message de chat récapitulatif.
 

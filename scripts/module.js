@@ -3,6 +3,7 @@ import { DuelsCatsApp } from "./duel-app.js";
 import { registerDuelSettings } from "./settings.js";
 import { registerDuelSocket } from "./duel-socket.js";
 import { showVsOverlay } from "./vs-overlay.js";
+import { showOutcomeOverlay } from "./outcome-overlay.js";
 import { showRollPrompt } from "./roll-prompt.js";
 
 let duelApp = null;
@@ -65,6 +66,7 @@ Hooks.once("ready", () => {
 
   registerDuelSocket({
     onVsOverlay: data => showVsOverlay(data, { playSound: false }),
+    onOutcomeOverlay: data => showOutcomeOverlay(data),
     onRollRequest: data => showRollPrompt(data),
     onRollResult: data => duelApp?.handleRemoteRollResult(data)
   });

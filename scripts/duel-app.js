@@ -14,6 +14,9 @@ function getSceneTokens() {
       id: token.id,
       name: token.name,
       img: token.texture?.src || token.actor?.img || "icons/svg/mystery-man.svg",
+      // Used for the VS/WINNER/FIGHT animations - the actor's portrait reads better full-screen
+      // than the (often top-down) token texture. Falls back to the token image if the actor has none.
+      actorImg: token.actor?.img || token.texture?.src || "icons/svg/mystery-man.svg",
       actor: token.actor ?? null
     }))
     .sort((a, b) => a.name.localeCompare(b.name));
@@ -201,9 +204,9 @@ export class DuelsCatsApp extends HandlebarsApplicationMixin(ApplicationV2) {
     this.render();
 
     const vsPayload = {
-      leftImg: this.slots.provocant.img,
+      leftImg: this.slots.provocant.actorImg,
       leftName: this.slots.provocant.name,
-      rightImg: this.slots.provoque.img,
+      rightImg: this.slots.provoque.actorImg,
       rightName: this.slots.provoque.name
     };
     emitVsOverlay(vsPayload);
@@ -314,11 +317,17 @@ export class DuelsCatsApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
     let payload;
     if (outcome === "provocant") {
-      payload = { mode: "winner", side: "left", img: provocant.img, name: provocant.name };
+      payload = { mode: "winner", side: "left", img: provocant.actorImg, name: provocant.name };
     } else if (outcome === "provoque") {
-      payload = { mode: "winner", side: "right", img: provoque.img, name: provoque.name };
+      payload = { mode: "winner", side: "right", img: provoque.actorImg, name: provoque.name };
     } else if (outcome === "combat") {
-      payload = { mode: "fight", leftImg: provocant.img, leftName: provocant.name, rightImg: provoque.img, rightName: provoque.name };
+      payload = {
+        mode: "fight",
+        leftImg: provocant.actorImg,
+        leftName: provocant.name,
+        rightImg: provoque.actorImg,
+        rightName: provoque.name
+      };
     } else {
       return; // "impressionne" - wait for the provoqué's choice
     }
